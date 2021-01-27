@@ -1,0 +1,18 @@
+
+BlockCTF connection protocol:
+
+connection command parameter separator: ?? (Newline character)
+Client -> Server
+COMMAND=======PARAMS
+move          x y z
+activity      -
+exit          -
+ready         -
+chat_message  text
+
+Server -> Client
+COMMAND=======PARAMS
+move          playerid x y z
+exit          playerid
+chat_message  playerid text
+new_player    playerid

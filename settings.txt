@@ -1,0 +1,3 @@
+port=1255
+maxplayers=10
+map=voxelctf_origin
