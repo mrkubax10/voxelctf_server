@@ -22,7 +22,7 @@ endef
 all: checkdirs build/BlockCTF_server
 
 build/BlockCTF_server: $(OBJ)
-	$(LD) $^ -o $@ -lpthread -lSDL2 -lSDL2main -lSDL2_net -llua5.1
+	$(LD) $^ -o $@ -lpthread -lenet -llua5.1
 
 
 checkdirs: $(BUILD_DIR)

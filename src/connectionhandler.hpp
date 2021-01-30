@@ -1,20 +1,22 @@
-#ifndef SRC_PLAYERHANDLER_HPP
-#define SRC_PLAYERHANDLER_HPP
+#ifndef SRC_CONNECTIONHANDLER_HPP
+#define SRC_CONNECTIONHANDLER_HPP
 #include <vector>
 #include "connectedplayer.hpp"
+enum ServerInitializationCommand{
 
+    INITIALIZE,PLAYER_DATA,MAP_DATA
+};
 enum ServerNetworkCommand{
     MOVE,ACTIVITY,EXIT,READY,CHAT_MESSAGE,WORLD_DATA,REJECT,NEW_PLAYER,CONNECTION
 };
 class Server;
-class PlayerHandler{
+class ConnectionHandler{
     std::vector<ConnectedPlayer> players;
-    SDLNet_SocketSet* sockets;
     Server* server;
 public:
-    PlayerHandler();
-    PlayerHandler(SDLNet_SocketSet* sockets,Server* server);
-    void update();
+    ConnectionHandler();
+    ConnectionHandler(Server* server);
+    void update(ENetEvent event);
     void addPlayer(ConnectedPlayer player);
     void sendNetworkCommandToAllPlayers(char* data,int len);
     void sendNetworkCommandToAllPlayersWithout(char* data,int len,int id);

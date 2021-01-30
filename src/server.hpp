@@ -1,24 +1,24 @@
 #ifndef SRC_SERVER_HPP
 #define SRC_SERVER_HPP
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_net.h>
+#include <enet/enet.h>
 #include <iostream>
 #include "settings.hpp"
-#include "playerhandler.hpp"
+#include "connectionhandler.hpp"
 #include "commandinterpreter.hpp"
 #include <thread>
 class Server{
-    TCPsocket socket;
-    IPaddress address;
     int port;
     bool running;
     Settings* settings;
-    PlayerHandler playerHandler;
-    SDLNet_SocketSet sockets;
+    ConnectionHandler connectionHandler;
     std::vector<char> mapData;
     int playerCount;
-    int currentPlayerID;
+    int playerID;
     CommandInterpreter commandInterpreter;
+    ENetHost* host;
+    ENetAddress address;
+    ENetEvent event;
+    bool playerWaiting;
 public:
     Server(Settings* settings);
     void run();

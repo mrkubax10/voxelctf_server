@@ -1,19 +1,17 @@
-#include "playerhandler.hpp"
+#include "connectionhandler.hpp"
 #include "server.hpp"
-PlayerHandler::PlayerHandler(SDLNet_SocketSet* sockets,Server* server){
-    PlayerHandler::sockets=sockets;
-    PlayerHandler::server=server;
+ConnectionHandler::ConnectionHandler(Server* server){
+    ConnectionHandler::server=server;
 }
-PlayerHandler::PlayerHandler(){
+ConnectionHandler::ConnectionHandler(){
 
 }
-void PlayerHandler::update(){
-    if(SDLNet_CheckSockets(*sockets,200)){
-        for(int i=0; i<PlayerHandler::players.size(); i++){
-            if(SDLNet_SocketReady(PlayerHandler::players[i].getSocket())){
-                char* data=PlayerHandler::players[i].recv();
+void ConnectionHandler::update(ENetEvent event){
+    if(event.type==ENET_EVENT_TYPE_RECEIVE){
+        for(int i=0; i<ConnectionHandler::players.size(); i++){
+            if(event.peer==ConnectionHandler::players[i].getSocket()){
+                char* data=(char*)event.packet->data;
                 if(data[0]==ServerNetworkCommand::READY){
-                    std::cout<<"READY"<<std::endl;
                     char* sendData=(char*)malloc(2+1+players[i].getName().length());
                     int sendDataLength=2+1+players[i].getName().length();
                     sendData[0]=ServerNetworkCommand::NEW_PLAYER;
@@ -22,7 +20,7 @@ void PlayerHandler::update(){
                     for(int a=0; a<players[i].getName().length(); a++){
                         sendData[a+3]=players[i].getName()[a];
                     }
-                    PlayerHandler::sendNetworkCommandToAllPlayersWithout(sendData,sendDataLength,players[i].getID());
+                    ConnectionHandler::sendNetworkCommandToAllPlayersWithout(sendData,sendDataLength,players[i].getID());
                     free(sendData);
                 }
                 else if(data[0]==ServerNetworkCommand::MOVE){
@@ -33,7 +31,7 @@ void PlayerHandler::update(){
                     for(int a=1; a<3*4+1; a++){
                         sendData[a+2]=data[a+1];
                     }
-                    PlayerHandler::sendNetworkCommandToAllPlayersWithout(sendData,sendDataLength,players[i].getID());
+                    ConnectionHandler::sendNetworkCommandToAllPlayersWithout(sendData,sendDataLength,players[i].getID());
                     float x,y,z;
                     ((uint8_t*)&x)[0]=data[1];
                     ((uint8_t*)&x)[1]=data[2];
@@ -57,12 +55,11 @@ void PlayerHandler::update(){
                     int sendDataLength=2;
                     sendData[0]=ServerNetworkCommand::EXIT;
                     sendData[1]=players[i].getID();
-                    PlayerHandler::sendNetworkCommandToAllPlayersWithout(sendData,sendDataLength,players[i].getID());
+                    ConnectionHandler::sendNetworkCommandToAllPlayersWithout(sendData,sendDataLength,players[i].getID());
                     std::cout<<"(Log) [Server Main] Player "<<players[i].getName()<<" left the game"<<std::endl;
                     players.erase(players.begin()+i);
                     server->changePlayerID(-1);
                     server->changePlayerCount(-1);
-                    std::cout<<server->getPlayerID()<<std::endl;
                 }
                 else if(data[0]==ServerNetworkCommand::ACTIVITY){
                     
@@ -72,23 +69,23 @@ void PlayerHandler::update(){
         }
     }
 }
-void PlayerHandler::addPlayer(ConnectedPlayer player){
-    PlayerHandler::players.push_back(player);
+void ConnectionHandler::addPlayer(ConnectedPlayer player){
+    ConnectionHandler::players.push_back(player);
 }
-void PlayerHandler::sendNetworkCommandToAllPlayers(char* data,int len){
-    for(int i=0; i<PlayerHandler::players.size(); i++){
-        PlayerHandler::players[i].send(data,len);
+void ConnectionHandler::sendNetworkCommandToAllPlayers(char* data,int len){
+    for(int i=0; i<ConnectionHandler::players.size(); i++){
+        ConnectionHandler::players[i].send(data,len);
     }
 }
-void PlayerHandler::sendNetworkCommandToAllPlayersWithout(char* data,int len,int id){
-    for(int i=0; i<PlayerHandler::players.size(); i++){
-        if(PlayerHandler::players[i].getID()!=id){
-            PlayerHandler::players[i].send(data,len);
+void ConnectionHandler::sendNetworkCommandToAllPlayersWithout(char* data,int len,int id){
+    for(int i=0; i<ConnectionHandler::players.size(); i++){
+        if(ConnectionHandler::players[i].getID()!=id){
+            ConnectionHandler::players[i].send(data,len);
             std::cout<<"Sending"<<std::endl;
         }
     }
 }
-ConnectedPlayer PlayerHandler::getPlayer(int id){
+ConnectedPlayer ConnectionHandler::getPlayer(int id){
     for(int i=0; i<players.size(); i++){
         if(players[i].getID()==id){
             return players[i];

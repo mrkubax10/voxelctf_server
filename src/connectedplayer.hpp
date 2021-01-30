@@ -1,21 +1,20 @@
 #ifndef SRC_CONNECTEDPLAYER_HPP
 #define SRC_CONNECTEDPLAYER_HPP
 #include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_net.h>
+#include <enet/enet.h>
 #define MAX_MESSAGE_LENGTH 65537 // sizeof(unsigned short)+2
 class ConnectedPlayer{
     std::string name;
-    TCPsocket socket;
     int id;
     long lastActivity;
     float x,y,z;
+    ENetPeer* socket;
 public:
-    ConnectedPlayer(std::string name,TCPsocket socket,int id);
+    ConnectedPlayer(std::string name,ENetPeer* socket,int id);
     void send(char* data,int len);
     char* recv();
-    TCPsocket getSocket();
     std::string getName();
+    ENetPeer* getSocket();
     int getID();
     float getX();
     float getY();

@@ -1,19 +1,18 @@
 #include "connectedplayer.hpp"
-ConnectedPlayer::ConnectedPlayer(std::string name,TCPsocket socket,int id){
+ConnectedPlayer::ConnectedPlayer(std::string name,ENetPeer* peer,int id){
     ConnectedPlayer::name=name;
-    ConnectedPlayer::socket=socket;
     ConnectedPlayer::id=id;
+    ConnectedPlayer::socket=peer;
 }
 void ConnectedPlayer::send(char* data,int len){
-    SDLNet_TCP_Send(ConnectedPlayer::socket,data,len);
+    ENetPacket* packet=enet_packet_create(data,len,ENET_PACKET_FLAG_RELIABLE);
+    enet_peer_send(ConnectedPlayer::socket,0,packet);
+    enet_packet_destroy(packet);
 }
 char* ConnectedPlayer::recv(){
     char* data=(char*)malloc(MAX_MESSAGE_LENGTH);
-    SDLNet_TCP_Recv(ConnectedPlayer::socket,data,MAX_MESSAGE_LENGTH);
+    
     return data;
-}
-TCPsocket ConnectedPlayer::getSocket(){
-    return ConnectedPlayer::socket;
 }
 std::string ConnectedPlayer::getName(){
     return ConnectedPlayer::name;
@@ -38,4 +37,7 @@ void ConnectedPlayer::setY(float y){
 }
 void ConnectedPlayer::setZ(float z){
     ConnectedPlayer::z=z;
+}
+ENetPeer* ConnectedPlayer::getSocket(){
+    return socket;
 }
