@@ -4,12 +4,11 @@
 #include "utils.hpp"
 class Server;
 class CommandInterpreter{
-    std::string input;
     Server* server;
 public:
     CommandInterpreter();
     CommandInterpreter(Server* server);
-    void processInput();
     void interprete(std::string line);
+    std::string input;
 };
 #endif

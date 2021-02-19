@@ -6,24 +6,12 @@ ConnectionHandler::ConnectionHandler(Server* server){
 ConnectionHandler::ConnectionHandler(){
 
 }
-void ConnectionHandler::update(ENetEvent event){
-    if(event.type==ENET_EVENT_TYPE_RECEIVE){
+void ConnectionHandler::update(ENetEvent* event){
+    if(event->type==ENET_EVENT_TYPE_RECEIVE){
         for(int i=0; i<ConnectionHandler::players.size(); i++){
-            if(event.peer==ConnectionHandler::players[i].getSocket()){
-                char* data=(char*)event.packet->data;
-                if(data[0]==ServerNetworkCommand::READY){
-                    char* sendData=(char*)malloc(2+1+players[i].getName().length());
-                    int sendDataLength=2+1+players[i].getName().length();
-                    sendData[0]=ServerNetworkCommand::NEW_PLAYER;
-                    sendData[1]=(uint8_t)players[i].getID();
-                    sendData[2]=players[i].getName().length();
-                    for(int a=0; a<players[i].getName().length(); a++){
-                        sendData[a+3]=players[i].getName()[a];
-                    }
-                    ConnectionHandler::sendNetworkCommandToAllPlayersWithout(sendData,sendDataLength,players[i].getID());
-                    free(sendData);
-                }
-                else if(data[0]==ServerNetworkCommand::MOVE){
+            if(event->peer==ConnectionHandler::players[i].getSocket()){
+                char* data=(char*)event->packet->data;
+                if(data[0]==ServerNetworkCommand::MOVE){
                     char* sendData=(char*)malloc(2+3*4);
                     int sendDataLength=2+3*4;
                     sendData[0]=ServerNetworkCommand::MOVE;
@@ -64,7 +52,8 @@ void ConnectionHandler::update(ENetEvent event){
                 else if(data[0]==ServerNetworkCommand::ACTIVITY){
                     
                 }
-                free(data);
+                if(event->packet)
+                    enet_packet_destroy(event->packet);
             }
         }
     }

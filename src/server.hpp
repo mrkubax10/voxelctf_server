@@ -6,6 +6,7 @@
 #include "connectionhandler.hpp"
 #include "commandinterpreter.hpp"
 #include <thread>
+#include "scripts/serverscriptsystem.hpp"
 class Server{
     int port;
     bool running;
@@ -19,7 +20,9 @@ class Server{
     ENetAddress address;
     ENetEvent event;
     bool playerWaiting;
+    ServerScriptSystem scriptSystem;
 public:
+    Server();
     Server(Settings* settings);
     void run();
     bool isRunning();
@@ -30,5 +33,6 @@ public:
     void changePlayerID(int i);
     void changePlayerCount(int i);
     int getPlayerID();
+    ENetHost* getHost();
 };
 #endif

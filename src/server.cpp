@@ -1,9 +1,9 @@
 #include "server.hpp"
-Server::Server(Settings* settings){
+Server::Server(Settings* settings):scriptSystem(this){
     Server::port=settings->port;
     Server::address.host=ENET_HOST_ANY;
     Server::address.port=Server::port;
-    Server::host=enet_host_create(&address,settings->maxplayers,2,0,0);
+    Server::host=enet_host_create(&address,10,2,0,0);
     Server::settings=settings;
     Server::running=true;
     Server::connectionHandler=ConnectionHandler(this);
@@ -12,34 +12,38 @@ Server::Server(Settings* settings){
     Server::commandInterpreter=CommandInterpreter(this);
     Server::loadMapData();
     Server::playerWaiting=false;
-    //std::thread commandInterpreterThread([&](){
-    //    commandInterpreter.processInput();
-    //});
+    // std::thread commandInterpreterThread([&](){
+    //     while(commandInterpreter.input!="exit"){
+    //         std::cout<<">";
+    //         getline(std::cin,commandInterpreter.input);
+    //     }
+    // });
 }
 void Server::run(){
+    
     while(Server::running){
-        while(enet_host_service(Server::host,&event,50)){
+        while(enet_host_service(Server::host,&event,0)){
             if(event.type==ENET_EVENT_TYPE_CONNECT){
                 Server::playerWaiting=true;
+                
             }
             else if(event.type==ENET_EVENT_TYPE_RECEIVE && Server::playerWaiting){
                 if(event.packet->data[0]==ServerInitializationCommand::INITIALIZE){
-                    char* playerName=(char*)malloc(event.packet->data[1]+1);
-                    for(int i=0; i<event.packet->data[1]; i++){
-                        playerName[i]=event.packet->data[i+2];
+                    int nameLength=event.packet->data[1];
+                    std::string name;
+                    for(int i=0; i<nameLength; i++){
+                        name+=event.packet->data[i+2];
                     }
-                    playerName[event.packet->data[1]]='\0';
-                    ConnectedPlayer player(playerName,event.peer,Server::playerID++);
-                    Server::connectionHandler.addPlayer(player);
-                    enet_packet_destroy(event.packet);
+                    ConnectedPlayer player(name,this,event.peer,Server::playerID++);
+                    std::cout<<"(Log) [Server] Player "<<name<<" joined the game with ID "<<Server::playerID-1<<std::endl;
                     Server::sendPlayerDataToPlayer(&player);
                     Server::sendWorldDataToPlayer(&player);
+                    connectionHandler.addPlayer(player);
+                    Server::playerWaiting=false;
                 }
-                Server::playerWaiting=false;
             }
-            else{
-                Server::connectionHandler.update(Server::event);
-            }
+            else
+                Server::connectionHandler.update(&event);
         }
     }
 }
@@ -50,10 +54,10 @@ void Server::setRunning(bool running){
     Server::running=running;
 }
 void Server::loadMapData(){
-    std::cout<<"(Log) [Server Main] Loading map "<<Server::settings->mapName<<std::endl;
+    std::cout<<"(Log) [Server] Loading map "<<Server::settings->mapName<<std::endl;
     std::ifstream file("res/maps/"+Server::settings->mapName+".voxelctf",std::ios::in|std::ios::binary);
     if(!file.good()){
-        std::cout<<"(Err) [Server Main] Failed to load map "<<std::endl;
+        std::cout<<"(Err) [Server] Failed to load map "<<std::endl;
         Server::running=false;
     }
     char byte;
@@ -92,20 +96,18 @@ void Server::sendPlayerDataToPlayer(ConnectedPlayer* player){
     player->send(sendData.data(),sendData.size());
 }
 void Server::sendWorldDataToPlayer(ConnectedPlayer* player){
-    char* sendData=(char*)malloc(7+mapData.size());
-    int sendDataLength=7+mapData.size();
+    char* sendData=(char*)malloc(1+mapData.size());
+    int sendDataLength=1+mapData.size();
     sendData[0]=ServerInitializationCommand::MAP_DATA;
-    unsigned short mapDataSize=mapData.size();
-    sendData[1]=((uint8_t*)&mapDataSize)[0];
-    sendData[2]=((uint8_t*)&mapDataSize)[1];
     for(int i=0; i<mapData.size(); i++){
-        sendData[3+i]=mapData[i];
-    }
-    for(int i=0; i<5; i++){
-        sendData[mapData.size()+i]=255;
+        sendData[i+1]=mapData[i];
     }
     player->send(sendData,sendDataLength);
     free(sendData);
+}
+
+ENetHost* Server::getHost(){
+    return host;
 }
 void Server::changePlayerID(int i){
     Server::playerID+=i;

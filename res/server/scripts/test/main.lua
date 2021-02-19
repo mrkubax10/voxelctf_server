@@ -1,1 +1,1 @@
-print("Siema")
+print(server_getVersion())

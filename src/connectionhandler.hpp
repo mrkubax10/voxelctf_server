@@ -16,7 +16,7 @@ class ConnectionHandler{
 public:
     ConnectionHandler();
     ConnectionHandler(Server* server);
-    void update(ENetEvent event);
+    void update(ENetEvent* event);
     void addPlayer(ConnectedPlayer player);
     void sendNetworkCommandToAllPlayers(char* data,int len);
     void sendNetworkCommandToAllPlayersWithout(char* data,int len,int id);

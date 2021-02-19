@@ -2,7 +2,7 @@
 CC        := g++
 LD        := g++
 
-MODULES   := .
+MODULES   := scripts .
 SRC_DIR   := $(addprefix src/,$(MODULES))
 BUILD_DIR := $(addprefix build/,$(MODULES))
 

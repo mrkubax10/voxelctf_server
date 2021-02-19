@@ -1,18 +1,20 @@
 #include "connectedplayer.hpp"
-ConnectedPlayer::ConnectedPlayer(std::string name,ENetPeer* peer,int id){
+#include "server.hpp"
+ConnectedPlayer::ConnectedPlayer(std::string name,Server* server,ENetPeer* peer,int id){
     ConnectedPlayer::name=name;
     ConnectedPlayer::id=id;
     ConnectedPlayer::socket=peer;
+    ConnectedPlayer::server=server;
 }
 void ConnectedPlayer::send(char* data,int len){
     ENetPacket* packet=enet_packet_create(data,len,ENET_PACKET_FLAG_RELIABLE);
     enet_peer_send(ConnectedPlayer::socket,0,packet);
+    enet_host_flush(server->getHost());
     enet_packet_destroy(packet);
 }
-char* ConnectedPlayer::recv(){
-    char* data=(char*)malloc(MAX_MESSAGE_LENGTH);
-    
-    return data;
+ENetPacket* ConnectedPlayer::recv(){
+    ENetPacket* packet=enet_peer_receive(ConnectedPlayer::socket,0);
+    return packet;
 }
 std::string ConnectedPlayer::getName(){
     return ConnectedPlayer::name;
