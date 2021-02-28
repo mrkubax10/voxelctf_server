@@ -7,6 +7,7 @@
 #include "commandinterpreter.hpp"
 #include <thread>
 #include "scripts/serverscriptsystem.hpp"
+extern char* SERVER_VERSION;
 class Server{
     int port;
     bool running;

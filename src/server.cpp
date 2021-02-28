@@ -19,6 +19,7 @@ Server::Server(Settings* settings):scriptSystem(this){
     //     }
     // });
 }
+char* SERVER_VERSION="dev    ";
 void Server::run(){
     
     while(Server::running){
@@ -41,6 +42,22 @@ void Server::run(){
                     connectionHandler.addPlayer(player);
                     Server::playerWaiting=false;
                 }
+                else if(event.packet->data[0]==ServerInitializationCommand::STATUS){
+                    char* sendData=(char*)malloc(10);
+                    sendData[0]=ServerInitializationCommand::STATUS_RESPONSE;
+                    sendData[1]=Server::playerCount;
+                    sendData[2]=Server::settings->maxplayers;
+                    for(int i=0; i<7; i++){
+                        sendData[i+3]=SERVER_VERSION[i];
+                    }
+                    ENetPacket* packet=enet_packet_create(sendData,10,ENET_PACKET_FLAG_RELIABLE);
+                    enet_peer_send(event.peer,0,packet);
+                    enet_host_flush(host);
+                    enet_packet_destroy(packet);
+                    free(sendData);
+                }
+                if(event.packet)
+                    enet_packet_destroy(event.packet);
             }
             else
                 Server::connectionHandler.update(&event);
