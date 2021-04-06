@@ -10,6 +10,8 @@ void ConnectionHandler::update(ENetEvent* event){
     if(event->type==ENET_EVENT_TYPE_RECEIVE){
         for(int i=0; i<ConnectionHandler::players.size(); i++){
             if(event->peer==ConnectionHandler::players[i].getSocket()){
+                if(!event->packet)
+                    continue;
                 char* data=(char*)event->packet->data;
                 if(data[0]==ServerNetworkCommand::MOVE){
                     char* sendData=(char*)malloc(2+3*4);
@@ -52,8 +54,7 @@ void ConnectionHandler::update(ENetEvent* event){
                 else if(data[0]==ServerNetworkCommand::ACTIVITY){
                     
                 }
-                if(event->packet)
-                    enet_packet_destroy(event->packet);
+                enet_packet_destroy(event->packet);
             }
         }
     }
@@ -70,7 +71,6 @@ void ConnectionHandler::sendNetworkCommandToAllPlayersWithout(char* data,int len
     for(int i=0; i<ConnectionHandler::players.size(); i++){
         if(ConnectionHandler::players[i].getID()!=id){
             ConnectionHandler::players[i].send(data,len);
-            std::cout<<"Sending"<<std::endl;
         }
     }
 }

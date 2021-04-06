@@ -1,6 +1,6 @@
 #ifndef SRC_SERVER_HPP
 #define SRC_SERVER_HPP
-#include <enet/enet.h>
+#include <asio.hpp>
 #include <iostream>
 #include "settings.hpp"
 #include "connectionhandler.hpp"

@@ -89,10 +89,9 @@ void Server::sendPlayerDataToPlayer(ConnectedPlayer* player){
     sendData.push_back(ServerInitializationCommand::PLAYER_DATA);
     sendData.push_back(Server::playerCount);
     for(int i=0; i<Server::playerCount; i++){
-        sendData.push_back(i);
         sendData.push_back(Server::connectionHandler.getPlayer(i).getName().length());
-        for(int b=0; b<Server::connectionHandler.getPlayer(i).getName().length(); b++){
-            sendData.push_back(Server::connectionHandler.getPlayer(i).getName()[b]);
+        for(int a=0; a<Server::connectionHandler.getPlayer(i).getName().length(); a++){
+            sendData.push_back(Server::connectionHandler.getPlayer(i).getName()[a]);
         }
         float x=Server::connectionHandler.getPlayer(i).getX();
         float y=Server::connectionHandler.getPlayer(i).getY();
@@ -109,6 +108,7 @@ void Server::sendPlayerDataToPlayer(ConnectedPlayer* player){
         sendData.push_back(((uint8_t*)&z)[1]);
         sendData.push_back(((uint8_t*)&z)[2]);
         sendData.push_back(((uint8_t*)&z)[3]);
+        sendData.push_back(Server::connectionHandler.getPlayer(i).getID());
     }
     player->send(sendData.data(),sendData.size());
 }
