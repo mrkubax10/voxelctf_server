@@ -39,6 +39,7 @@ void Server::run(){
                     std::cout<<"(Log) [Server] Player "<<name<<" joined the game with ID "<<Server::playerID-1<<std::endl;
                     Server::sendPlayerDataToPlayer(&player);
                     Server::sendWorldDataToPlayer(&player);
+                    Server::playerCount++;
                     connectionHandler.addPlayer(player);
                     Server::playerWaiting=false;
                 }
@@ -88,6 +89,7 @@ void Server::sendPlayerDataToPlayer(ConnectedPlayer* player){
     std::vector<char> sendData;
     sendData.push_back(ServerInitializationCommand::PLAYER_DATA);
     sendData.push_back(Server::playerCount);
+    
     for(int i=0; i<Server::playerCount; i++){
         sendData.push_back(Server::connectionHandler.getPlayer(i).getName().length());
         for(int a=0; a<Server::connectionHandler.getPlayer(i).getName().length(); a++){

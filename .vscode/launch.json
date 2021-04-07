@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "BlockCTF_server",
+            "name": "VoxelCTF_server",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/BlockCTF_server",
+            "program": "${workspaceFolder}/build/VoxelCTF_server",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

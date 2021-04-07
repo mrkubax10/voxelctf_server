@@ -19,9 +19,9 @@ endef
 
 .PHONY: all checkdirs clean
 
-all: checkdirs build/BlockCTF_server
+all: checkdirs build/VoxelCTF_server
 
-build/BlockCTF_server: $(OBJ)
+build/VoxelCTF_server: $(OBJ)
 	$(LD) $^ -o $@ -lpthread -lenet -llua5.1
 
 

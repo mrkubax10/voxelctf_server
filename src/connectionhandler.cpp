@@ -54,6 +54,21 @@ void ConnectionHandler::update(ENetEvent* event){
                 else if(data[0]==ServerNetworkCommand::ACTIVITY){
                     
                 }
+                else if(data[0]==ServerNetworkCommand::CHAT_MESSAGE){
+                    char* sendData=(char*)malloc(data[1]+3);
+                    sendData[0]=ServerNetworkCommand::CHAT_MESSAGE;
+                    sendData[1]=players[i].getID();
+                    sendData[2]=data[1];
+                    sendData[3]=data[2];
+                    short messageLength;
+                    ((uint8_t*)&messageLength)[0]=data[1];
+                    ((uint8_t*)&messageLength)[1]=data[2];
+                    for(int a=0; a<messageLength; a++){
+                        sendData[a]=data[4+a];
+                    }    
+                    ConnectionHandler::sendNetworkCommandToAllPlayersWithout(sendData,data[1]+3,players[i].getID());
+                    
+                }
                 enet_packet_destroy(event->packet);
             }
         }
