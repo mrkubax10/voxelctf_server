@@ -60,6 +60,19 @@ void ConnectionHandler::update(ENetEvent* event){
     }
 }
 void ConnectionHandler::addPlayer(ConnectedPlayer player){
+    if(ConnectionHandler::players.size()>0){
+        char* sendData=(char*)malloc(4+player.getName().length());
+        sendData[0]=ServerNetworkCommand::NEW_PLAYER;
+        sendData[1]=0;
+        sendData[2]=ConnectionHandler::server->getPlayerID();
+        sendData[3]=player.getName().length();
+        for(int i=0; i<player.getName().length(); i++){
+            sendData[4+i]=player.getName()[i];
+        }
+        ConnectionHandler::sendNetworkCommandToAllPlayers(sendData,4+player.getName().length());
+        free(sendData);
+    }
+    
     ConnectionHandler::players.push_back(player);
 }
 void ConnectionHandler::sendNetworkCommandToAllPlayers(char* data,int len){
