@@ -55,7 +55,7 @@ void ConnectionHandler::update(ENetEvent* event){
                     
                 }
                 else if(data[0]==ServerNetworkCommand::CHAT_MESSAGE){
-                    char* sendData=(char*)malloc(data[1]+3);
+                    char* sendData=(char*)malloc(data[1]+4);
                     sendData[0]=ServerNetworkCommand::CHAT_MESSAGE;
                     sendData[1]=players[i].getID();
                     sendData[2]=data[1];
@@ -63,10 +63,14 @@ void ConnectionHandler::update(ENetEvent* event){
                     short messageLength;
                     ((uint8_t*)&messageLength)[0]=data[1];
                     ((uint8_t*)&messageLength)[1]=data[2];
+                    std::string message="";
                     for(int a=0; a<messageLength; a++){
-                        sendData[a]=data[4+a];
-                    }    
-                    ConnectionHandler::sendNetworkCommandToAllPlayersWithout(sendData,data[1]+3,players[i].getID());
+                        sendData[a+4]=data[3+a];
+                        message+=data[3+a];
+                    }
+                    std::cout<<std::endl;
+                    std::cout<<"(Log) [ConnectionHandler] Player "<<players[i].getName()<<" has written on chat: "<<message<<std::endl;
+                    ConnectionHandler::sendNetworkCommandToAllPlayersWithout(sendData,data[1]+4,players[i].getID());
                     
                 }
                 enet_packet_destroy(event->packet);
@@ -79,7 +83,7 @@ void ConnectionHandler::addPlayer(ConnectedPlayer player){
         char* sendData=(char*)malloc(4+player.getName().length());
         sendData[0]=ServerNetworkCommand::NEW_PLAYER;
         sendData[1]=0;
-        sendData[2]=ConnectionHandler::server->getPlayerID();
+        sendData[2]=ConnectionHandler::server->getPlayerID()-1;
         sendData[3]=player.getName().length();
         for(int i=0; i<player.getName().length(); i++){
             sendData[4+i]=player.getName()[i];

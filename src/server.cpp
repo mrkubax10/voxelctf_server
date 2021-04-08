@@ -35,7 +35,8 @@ void Server::run(){
                     for(int i=0; i<nameLength; i++){
                         name+=event.packet->data[i+2];
                     }
-                    ConnectedPlayer player(name,this,event.peer,Server::playerID++);
+                    ConnectedPlayer player(name,this,event.peer,Server::playerID);
+                    Server::playerID++;
                     std::cout<<"(Log) [Server] Player "<<name<<" joined the game with ID "<<Server::playerID-1<<std::endl;
                     Server::sendPlayerDataToPlayer(&player);
                     Server::sendWorldDataToPlayer(&player);
