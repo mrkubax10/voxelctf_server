@@ -35,11 +35,20 @@ void Server::run(){
                     for(int i=0; i<nameLength; i++){
                         name+=event.packet->data[i+2];
                     }
-                    ConnectedPlayer player(name,this,event.peer,Server::playerID);
+                    uint8_t team=0;
+                    if(Server::teamPlayerCount["0"]>Server::teamPlayerCount["1"]){
+                        Server::teamPlayerCount["1"]++;
+                        team=1;
+                    }
+                    else{
+                        Server::teamPlayerCount["0"]++;
+                    }
+                    ConnectedPlayer player(name,this,event.peer,Server::playerID,team);
                     Server::playerID++;
                     std::cout<<"(Log) [Server] Player "<<name<<" joined the game with ID "<<Server::playerID-1<<std::endl;
                     Server::sendPlayerDataToPlayer(&player);
                     Server::sendWorldDataToPlayer(&player);
+                    Server::sendPlayerInitDataToPlayer(&player);
                     Server::playerCount++;
                     connectionHandler.addPlayer(player);
                     Server::playerWaiting=false;
@@ -112,6 +121,7 @@ void Server::sendPlayerDataToPlayer(ConnectedPlayer* player){
         sendData.push_back(((uint8_t*)&z)[2]);
         sendData.push_back(((uint8_t*)&z)[3]);
         sendData.push_back(Server::connectionHandler.getPlayer(i).getID());
+        sendData.push_back(Server::connectionHandler.getPlayer(i).getTeam());
     }
     player->send(sendData.data(),sendData.size());
 }
@@ -125,7 +135,13 @@ void Server::sendWorldDataToPlayer(ConnectedPlayer* player){
     player->send(sendData,sendDataLength);
     free(sendData);
 }
-
+void Server::sendPlayerInitDataToPlayer(ConnectedPlayer* player){
+    char* sendData=(char*)malloc(2);
+    sendData[0]=ServerInitializationCommand::PLAYER_INIT;
+    sendData[1]=player->getTeam();
+    player->send(sendData,2);
+    free(sendData);
+}
 ENetHost* Server::getHost(){
     return host;
 }

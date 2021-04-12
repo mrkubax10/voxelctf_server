@@ -22,7 +22,9 @@ class Server{
     ENetEvent event;
     bool playerWaiting;
     ServerScriptSystem scriptSystem;
+    
 public:
+    std::map<std::string,int> teamPlayerCount;
     Server();
     Server(Settings* settings);
     void run();
@@ -31,6 +33,7 @@ public:
     void loadMapData();
     void sendPlayerDataToPlayer(ConnectedPlayer* player);
     void sendWorldDataToPlayer(ConnectedPlayer* player);
+    void sendPlayerInitDataToPlayer(ConnectedPlayer* player);
     void changePlayerID(int i);
     void changePlayerCount(int i);
     int getPlayerID();

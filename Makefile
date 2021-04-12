@@ -14,7 +14,7 @@ vpath %.cpp $(SRC_DIR)
 
 define make-goal
 $1/%.o: %.cpp
-	$(CC) $(INCLUDES) -c $$< -o $$@
+	$(CC) $(INCLUDES) -g -c $$< -o $$@
 endef
 
 .PHONY: all checkdirs clean
@@ -22,7 +22,7 @@ endef
 all: checkdirs build/VoxelCTF_server
 
 build/VoxelCTF_server: $(OBJ)
-	$(LD) $^ -o $@ -lpthread -lenet -llua5.1
+	$(LD) $^ -g -o $@ -lpthread -lenet -llua5.1
 
 
 checkdirs: $(BUILD_DIR)

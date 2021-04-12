@@ -12,8 +12,9 @@ class ConnectedPlayer{
     float x,y,z;
     ENetPeer* socket;
     Server* server;
+    uint8_t team;
 public:
-    ConnectedPlayer(std::string name,Server* server,ENetPeer* socket,int id);
+    ConnectedPlayer(std::string name,Server* server,ENetPeer* socket,int id,uint8_t team);
     void send(char* data,int len);
     ENetPacket* recv();
     std::string getName();
@@ -25,5 +26,7 @@ public:
     void setX(float x);
     void setY(float y);
     void setZ(float z);
+    void setTeam(uint8_t team);
+    uint8_t getTeam();
 };
 #endif

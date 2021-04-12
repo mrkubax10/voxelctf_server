@@ -47,6 +47,7 @@ void ConnectionHandler::update(ENetEvent* event){
                     sendData[1]=players[i].getID();
                     ConnectionHandler::sendNetworkCommandToAllPlayersWithout(sendData,sendDataLength,players[i].getID());
                     std::cout<<"(Log) [Server Main] Player "<<players[i].getName()<<" left the game"<<std::endl;
+                    ConnectionHandler::server->teamPlayerCount[std::to_string(players[i].getTeam())]--;
                     players.erase(players.begin()+i);
                     server->changePlayerID(-1);
                     server->changePlayerCount(-1);
@@ -68,7 +69,6 @@ void ConnectionHandler::update(ENetEvent* event){
                         sendData[a+4]=data[3+a];
                         message+=data[3+a];
                     }
-                    std::cout<<std::endl;
                     std::cout<<"(Log) [ConnectionHandler] Player "<<players[i].getName()<<" has written on chat: "<<message<<std::endl;
                     ConnectionHandler::sendNetworkCommandToAllPlayersWithout(sendData,data[1]+4,players[i].getID());
                     

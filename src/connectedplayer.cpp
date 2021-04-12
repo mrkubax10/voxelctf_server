@@ -1,16 +1,22 @@
 #include "connectedplayer.hpp"
 #include "server.hpp"
-ConnectedPlayer::ConnectedPlayer(std::string name,Server* server,ENetPeer* peer,int id){
+ConnectedPlayer::ConnectedPlayer(std::string name,Server* server,ENetPeer* peer,int id,uint8_t team){
     ConnectedPlayer::name=name;
     ConnectedPlayer::id=id;
     ConnectedPlayer::socket=peer;
     ConnectedPlayer::server=server;
+    ConnectedPlayer::team=team;
 }
 void ConnectedPlayer::send(char* data,int len){
     ENetPacket* packet=enet_packet_create(data,len,ENET_PACKET_FLAG_RELIABLE);
     enet_peer_send(ConnectedPlayer::socket,0,packet);
     enet_host_flush(server->getHost());
-    enet_packet_destroy(packet);
+}
+void ConnectedPlayer::setTeam(uint8_t team){
+    ConnectedPlayer::team=team;
+}
+uint8_t ConnectedPlayer::getTeam(){
+    return ConnectedPlayer::team;
 }
 ENetPacket* ConnectedPlayer::recv(){
     ENetPacket* packet=enet_peer_receive(ConnectedPlayer::socket,0);
