@@ -18,6 +18,12 @@ void ConnectedPlayer::setTeam(uint8_t team){
 uint8_t ConnectedPlayer::getTeam(){
     return ConnectedPlayer::team;
 }
+void ConnectedPlayer::updateActivity(){
+    ConnectedPlayer::lastActivity=time(0);
+}
+long ConnectedPlayer::getLastActivity(){
+    return lastActivity;
+}
 ENetPacket* ConnectedPlayer::recv(){
     ENetPacket* packet=enet_peer_receive(ConnectedPlayer::socket,0);
     return packet;

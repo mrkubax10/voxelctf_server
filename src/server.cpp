@@ -73,6 +73,20 @@ void Server::run(){
             else
                 Server::connectionHandler.update(&event);
         }
+        for(int i=0; i<Server::playerCount; i++){
+            if(Server::connectionHandler.getPlayer(i).getLastActivity()+5<time(0)){
+                char* sendData=(char*)malloc(2);
+                int sendDataLength=2;
+                sendData[0]=ServerNetworkCommand::EXIT;
+                sendData[1]=Server::connectionHandler.getPlayer(i).getID();
+                Server::connectionHandler.sendNetworkCommandToAllPlayersWithout(sendData,sendDataLength,Server::connectionHandler.getPlayer(i).getID());
+                std::cout<<"(Log) [Server Main] Player "<<Server::connectionHandler.getPlayer(i).getName()<<" left the game: Timed out"<<std::endl;
+                Server::teamPlayerCount[std::to_string(Server::connectionHandler.getPlayer(i).getTeam())]--;
+                Server::connectionHandler.getPlayerList().erase(Server::connectionHandler.getPlayerList().begin()+i);
+                Server::changePlayerID(-1);
+                Server::changePlayerCount(-1);
+            }
+        }
     }
 }
 bool Server::isRunning(){

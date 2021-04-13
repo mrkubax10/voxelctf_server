@@ -53,7 +53,11 @@ void ConnectionHandler::update(ENetEvent* event){
                     server->changePlayerCount(-1);
                 }
                 else if(data[0]==ServerNetworkCommand::ACTIVITY){
-                    
+                    players[i].updateActivity();
+                    char* sendData=(char*)malloc(1);
+                    sendData[0]=ServerNetworkCommand::ACTIVITY;
+                    players[i].send(sendData,1);
+                    free(sendData);
                 }
                 else if(data[0]==ServerNetworkCommand::CHAT_MESSAGE){
                     char* sendData=(char*)malloc(data[1]+4);
@@ -113,4 +117,7 @@ ConnectedPlayer ConnectionHandler::getPlayer(int id){
         }
     }
     return players[0];
+}
+std::vector<ConnectedPlayer>& ConnectionHandler::getPlayerList(){
+    return players;
 }

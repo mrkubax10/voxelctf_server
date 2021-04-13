@@ -28,5 +28,7 @@ public:
     void setZ(float z);
     void setTeam(uint8_t team);
     uint8_t getTeam();
+    void updateActivity();
+    long getLastActivity();
 };
 #endif

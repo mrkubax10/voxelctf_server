@@ -4,10 +4,10 @@
 #include "connectedplayer.hpp"
 enum ServerInitializationCommand{
 
-    INITIALIZE,PLAYER_DATA,MAP_DATA,PLAYER_INIT,STATUS,STATUS_RESPONSE
+    INITIALIZE,PLAYER_DATA,MAP_DATA,PLAYER_INIT,REJECT,STATUS,STATUS_RESPONSE
 };
 enum ServerNetworkCommand{
-    MOVE,ACTIVITY,EXIT,READY,CHAT_MESSAGE,WORLD_DATA,REJECT,NEW_PLAYER,CONNECTION
+    MOVE,ACTIVITY,EXIT,READY,CHAT_MESSAGE,WORLD_DATA,NEW_PLAYER,CONNECTION
 };
 class Server;
 class ConnectionHandler{
@@ -21,5 +21,6 @@ public:
     void sendNetworkCommandToAllPlayers(char* data,int len);
     void sendNetworkCommandToAllPlayersWithout(char* data,int len,int id);
     ConnectedPlayer getPlayer(int id);
+    std::vector<ConnectedPlayer>& getPlayerList();
 };
 #endif
