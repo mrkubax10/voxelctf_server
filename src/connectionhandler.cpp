@@ -77,6 +77,22 @@ void ConnectionHandler::update(ENetEvent* event){
                     ConnectionHandler::sendNetworkCommandToAllPlayersWithout(sendData,data[1]+4,players[i].getID());
                     
                 }
+                else if(data[0]==ServerNetworkCommand::FLAG_FETCH){
+                    char* sendData=(char*)malloc(3);
+                    sendData[0]=ServerNetworkCommand::FLAG_FETCH;
+                    sendData[1]=data[1];
+                    sendData[2]=players[i].getID();
+                    ConnectionHandler::sendNetworkCommandToAllPlayersWithout(sendData,3,players[i].getID());
+                    std::cout<<"(Log) [ConnectionHandler] Player "<<players[i].getName()<<" fetched flag of team "<<(int)data[1]<<std::endl;
+                }
+                else if(data[0]==ServerNetworkCommand::FLAG_CAPTURE){
+                    char* sendData=(char*)malloc(3);
+                    sendData[0]=ServerNetworkCommand::FLAG_CAPTURE;
+                    sendData[1]=data[1];
+                    sendData[2]=players[i].getID();
+                    ConnectionHandler::sendNetworkCommandToAllPlayersWithout(sendData,3,players[i].getID());
+                    std::cout<<"(Log) [ConnectionHandler] Player "<<players[i].getName()<<" delivered flag of team "<<(int)data[1]<<std::endl;
+                }
                 enet_packet_destroy(event->packet);
             }
         }
