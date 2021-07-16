@@ -4,12 +4,13 @@
 class Server;
 class ServerScriptSystem;
 class ServerAPI{
-    Server* server;
-    ServerScriptSystem* scriptSystem;
+    static Server* server;
+    static ServerScriptSystem* scriptSystem;
 public:
-    ServerAPI(Server* server,ServerScriptSystem* system);
-
-    int getVersion(lua_State* L);
-
+    static void init(Server* server,ServerScriptSystem* system);
+    // Misc functions
+    static int getVersion(lua_State* L);
+    // Player functions
+    static int getPlayerCount(lua_State* L);
 };
 #endif

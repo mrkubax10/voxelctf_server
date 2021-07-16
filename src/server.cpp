@@ -18,6 +18,7 @@ Server::Server(Settings* settings):scriptSystem(this){
     //         getline(std::cin,commandInterpreter.input);
     //     }
     // });
+    Server::scriptSystem.getServerScript("test")->run();
 }
 char* SERVER_VERSION="dev    ";
 void Server::run(){

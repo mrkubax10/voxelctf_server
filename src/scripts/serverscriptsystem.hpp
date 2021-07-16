@@ -11,7 +11,5 @@ class ServerScriptSystem{
 public:
     ServerScriptSystem(Server* server);
     ServerScript* getServerScript(std::string name);
-    static int api_getVersion();
-    ServerAPI api;
 };
 #endif

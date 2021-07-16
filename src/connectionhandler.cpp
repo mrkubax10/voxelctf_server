@@ -40,18 +40,6 @@ void ConnectionHandler::update(ENetEvent* event){
                     players[i].setZ(z);
                     free(sendData);
                 }
-                else if(data[0]==ServerNetworkCommand::EXIT){
-                    char* sendData=(char*)malloc(2);
-                    int sendDataLength=2;
-                    sendData[0]=ServerNetworkCommand::EXIT;
-                    sendData[1]=players[i].getID();
-                    ConnectionHandler::sendNetworkCommandToAllPlayersWithout(sendData,sendDataLength,players[i].getID());
-                    std::cout<<"(Log) [Server Main] Player "<<players[i].getName()<<" left the game"<<std::endl;
-                    ConnectionHandler::server->teamPlayerCount[std::to_string(players[i].getTeam())]--;
-                    players.erase(players.begin()+i);
-                    server->changePlayerID(-1);
-                    server->changePlayerCount(-1);
-                }
                 else if(data[0]==ServerNetworkCommand::ACTIVITY){
                     players[i].updateActivity();
                     char* sendData=(char*)malloc(1);
@@ -96,6 +84,24 @@ void ConnectionHandler::update(ENetEvent* event){
                 enet_packet_destroy(event->packet);
             }
         }
+    }
+    if(event->type==ENET_EVENT_TYPE_DISCONNECT){
+        for(int i=0; i<ConnectionHandler::players.size(); i++){
+            if(ConnectionHandler::players[i].getSocket()==event->peer){
+                char* sendData=(char*)malloc(2);
+                int sendDataLength=2;
+                sendData[0]=ServerNetworkCommand::EXIT;
+                sendData[1]=players[i].getID();
+                ConnectionHandler::sendNetworkCommandToAllPlayersWithout(sendData,sendDataLength,players[i].getID());
+                std::cout<<"(Log) [Server Main] Player "<<players[i].getName()<<" left the game"<<std::endl;
+                ConnectionHandler::server->teamPlayerCount[std::to_string(players[i].getTeam())]--;
+                players.erase(players.begin()+i);
+                server->changePlayerID(-1);
+                server->changePlayerCount(-1);
+                break;
+            }
+        }
+        
     }
 }
 void ConnectionHandler::addPlayer(ConnectedPlayer player){
