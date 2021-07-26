@@ -7,6 +7,7 @@
 #include "commandinterpreter.hpp"
 #include <thread>
 #include "scripts/serverscriptsystem.hpp"
+#include "whitelist.hpp"
 extern char* SERVER_VERSION;
 class Server{
     int port;
@@ -22,7 +23,7 @@ class Server{
     ENetEvent event;
     bool playerWaiting;
     ServerScriptSystem scriptSystem;
-    
+    Whitelist whitelist;
 public:
     std::map<std::string,int> teamPlayerCount;
     Server();
@@ -38,5 +39,6 @@ public:
     void changePlayerCount(int i);
     int getPlayerID();
     ENetHost* getHost();
+    Whitelist& getWhitelist();
 };
 #endif

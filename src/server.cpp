@@ -1,11 +1,12 @@
 #include "server.hpp"
-Server::Server(Settings* settings):scriptSystem(this){
+Server::Server(Settings* settings):scriptSystem(this),whitelist(){
     Server::port=settings->port;
     Server::address.host=ENET_HOST_ANY;
     Server::address.port=Server::port;
     Server::host=enet_host_create(&address,10,2,0,0);
     Server::settings=settings;
     Server::running=true;
+    Server::whitelist.load();
     Server::connectionHandler=ConnectionHandler(this);
     Server::playerCount=0;
     Server::playerID=0;
@@ -89,6 +90,7 @@ void Server::run(){
             }
         }
     }
+    Server::whitelist.save();
 }
 bool Server::isRunning(){
     return Server::running;
@@ -168,4 +170,7 @@ int Server::getPlayerID(){
 }
 void Server::changePlayerCount(int i){
     Server::playerCount+=i;
+}
+Whitelist& Server::getWhitelist(){
+    return Server::whitelist;
 }
